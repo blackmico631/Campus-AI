@@ -43,3 +43,20 @@ class CampusAI:
                 "content": SYSTEM_PROMPT
             }
         ]
+    
+    def ask_with_context(self, question: str, context: str) -> str:
+        prompt = f"""
+        以下の資料を参考にして、ユーザーの質問に回答してください。
+        【ルール】
+        - 資料に書かれている内容を優先してください。
+        - 資料から判断できない場合は、そのことを明確に伝えてください。
+        - 資料にない情報を推測で補わないでください。
+        
+        【資料】
+        {context}
+        
+        【質問】
+        {question}
+        """
+        
+        return self.ask(prompt)
