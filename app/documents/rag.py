@@ -1,17 +1,19 @@
-from documents.pdf_reader import read_pdf
-from documents.chunker import split_text
-from documents.retriever import search_chunks
+from documents.retriever import search_indexes
 
 
 class RAG:
-    def __init__(self, file_path: str):
-        text = read_pdf(file_path)
-        self.chunks = split_text(text)
+    def __init__(self, index_paths: list[str]):
+        self.index_paths = index_paths
 
-    def retrieve(self, question: str, top_k: int = 3) -> str:
-        results = search_chunks(
+    def retrieve(
+        self,
+        question: str,
+        top_k: int = 3
+    ) -> str:
+
+        results = search_indexes(
             question=question,
-            chunks=self.chunks,
+            index_paths=self.index_paths,
             top_k=top_k
         )
 

@@ -1,14 +1,19 @@
 from ai.client import CampusAI
 from documents.rag import RAG
+from documents.subject_manager import SubjectManager
 
 
 ai = CampusAI()
 
-rag = RAG(
-    "data/documents/アセンブリ言語実機演習レポート.pdf"
-)
+manager = SubjectManager()
 
-question = "LEDの点灯に関する考察について説明してください"
+manager.select_subject("assembly")
+
+index_files = manager.get_index_files()
+
+rag = RAG(index_files)
+
+question = "この講義資料の重要なポイントを説明してください"
 
 context = rag.retrieve(question)
 
@@ -17,6 +22,7 @@ answer = ai.ask_with_context(
     context=context
 )
 
+print(f"科目: {manager.current_subject}")
 print(f"質問: {question}")
 print()
 print("CampusAI:")
