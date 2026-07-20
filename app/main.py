@@ -1,10 +1,13 @@
 from ai.client import CampusAI
 from documents.rag import RAG
 from documents.subject_manager import SubjectManager
+from documents.document_manager import DocumentManager
 
 
 ai = CampusAI()
 manager = SubjectManager()
+document_manager = DocumentManager()
+
 rag = None
 
 print("=" * 40)
@@ -27,12 +30,44 @@ while True:
 ====================
 Commands
 ====================
-/help               コマンド一覧を表示
-/subjects           利用可能な科目を表示
-/subject <科目名>   科目を選択
-/clear              会話履歴を削除
-/exit               CampusAIを終了
+/help                     コマンド一覧を表示
+/subjects                 利用可能な科目を表示
+/subject <科目名>         科目を選択
+/add <科目名> <PDF名>     講義資料を登録
+/clear                    会話履歴を削除
+/exit                     CampusAIを終了
 """)
+        continue
+
+    # 資料登録
+    elif user_input.startswith("/add "):
+        parts = user_input.split(maxsplit=2)
+
+        if len(parts) != 3:
+            print(
+                "CampusAI > "
+                "使い方: /add <科目名> <PDF名>\n"
+            )
+            continue
+
+        subject = parts[1]
+        filename = parts[2]
+
+        print("CampusAI > 資料を登録しています...")
+
+        result = document_manager.add_document(
+            subject=subject,
+            filename=filename
+        )
+
+        print(f"CampusAI > {result}\n")
+
+        if manager.current_subject == subject:
+            index_files = manager.get_index_files()
+
+            if index_files:
+                rag = RAG(index_files)
+
         continue
 
     # 科目一覧
