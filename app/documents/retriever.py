@@ -4,6 +4,8 @@ from documents.embedder import create_embedding
 
 import json
 
+from pathlib import Path
+
 
 def cosine_similarity(vector_a: list[float], vector_b: list[float]) -> float:
     dot_product = sum(a * b for a, b in zip(vector_a, vector_b))
@@ -49,7 +51,9 @@ def search_index(
     question: str,
     index_path: str,
     top_k: int = 3
-    ) -> list[tuple[str, float]]:
+) -> list[dict]:
+
+    filename = Path(index_path).with_suffix(".pdf").name
 
     # 保存済みインデックスを読み込む
     with open(index_path, "r", encoding="utf-8") as f:
@@ -67,14 +71,15 @@ def search_index(
         )
 
         results.append(
-            (
-                item["chunk"],
-                similarity
-            )
+            {
+                "chunk": item["chunk"],
+                "score": similarity,
+                "file": filename
+            }
         )
 
     results.sort(
-        key=lambda x: x[1],
+        key=lambda x: x["score"],
         reverse=True
     )
 
@@ -85,31 +90,21 @@ def search_indexes(
     question: str,
     index_paths: list[str],
     top_k: int = 3
-) -> list[tuple[str, float]]:
-
-    question_embedding = create_embedding(question)
+) -> list[dict]:
 
     results = []
 
     for index_path in index_paths:
-        with open(index_path, "r", encoding="utf-8") as f:
-            index_data = json.load(f)
-
-        for item in index_data:
-            similarity = cosine_similarity(
-                question_embedding,
-                item["embedding"]
+        results.extend(
+            search_index(
+                question=question,
+                index_path=index_path,
+                top_k=top_k
             )
-
-            results.append(
-                (
-                    item["chunk"],
-                    similarity
-                )
-            )
+        )
 
     results.sort(
-        key=lambda x: x[1],
+        key=lambda x: x["score"],
         reverse=True
     )
 

@@ -1,9 +1,10 @@
 from ollama import chat
 from ai.prompts import SYSTEM_PROMPT
+from config import CHAT_MODEL
 
 
 class CampusAI:
-    def __init__(self, model="qwen3:8b"):
+    def __init__(self, model=CHAT_MODEL):
         self.model = model
         self.messages = [
             {

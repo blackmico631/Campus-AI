@@ -1,4 +1,5 @@
 from documents.retriever import search_indexes
+from documents.reranker import rerank
 
 
 class RAG:
@@ -8,17 +9,38 @@ class RAG:
     def retrieve(
         self,
         question: str,
+        candidate_k: int = 10,
         top_k: int = 3
-    ) -> str:
+    ) -> dict:
 
         results = search_indexes(
             question=question,
             index_paths=self.index_paths,
+            top_k=candidate_k
+        )
+        results = rerank(
+            question=question,
+            results=results,
             top_k=top_k
         )
 
+        print("\n========== DEBUG ==========")
+
+        for i, result in enumerate(results, start=1):
+            print(f"\nChunk {i}")
+            print(f"File : {result['file']}")
+            print(f"Embedding Score : {result['score']:.4f}")
+            print(f"Re-rank Score   : {result['rerank_score']:.1f}")
+            print("----------------------")
+            print(result["chunk"][:300])
+
+        print("===========================\n")
+
         context = "\n\n---\n\n".join(
-            chunk for chunk, score in results
+            result["chunk"] for result in results
         )
 
-        return context
+        return {
+            "context": context,
+            "results": results
+        }

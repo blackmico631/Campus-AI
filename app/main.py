@@ -2,6 +2,7 @@ from ai.client import CampusAI
 from documents.rag import RAG
 from documents.subject_manager import SubjectManager
 from documents.document_manager import DocumentManager
+from config import APP_NAME, VERSION
 
 
 ai = CampusAI()
@@ -11,7 +12,7 @@ document_manager = DocumentManager()
 rag = None
 
 print("=" * 40)
-print("           CampusAI v0.10")
+print(f"      {APP_NAME} v{VERSION}")
 print("=" * 40)
 print("コマンド一覧は /help で確認できます。\n")
 
@@ -172,19 +173,28 @@ while True:
 
     # 科目未選択
     if rag is None:
-        print(
-            "CampusAI > 先に科目を選択してください。"
-            "「/subjects」で一覧を確認できます。\n"
+        answer = ai.ask(user_input)
+
+    else:
+        retrieval = rag.retrieve(user_input)
+
+        context = retrieval["context"]
+        results = retrieval["results"]
+
+        answer = ai.ask_with_context(
+            question=user_input,
+            context=context
         )
-        continue
 
-    # RAG検索
-    context = rag.retrieve(user_input)
+        print(f"\nCampusAI > {answer}\n")
 
-    # 資料を使って回答
-    answer = ai.ask_with_context(
-        question=user_input,
-        context=context
-    )
+        print("参考資料")
+        print("-" * 30)
 
-    print(f"\nCampusAI > {answer}\n")
+        for i, result in enumerate(results, start=1):
+            print(
+                f"{i}. {result['file']} "
+                f"(Re-rank: {result['rerank_score']:.1f})"
+            )
+
+        print()
