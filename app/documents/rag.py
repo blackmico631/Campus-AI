@@ -29,6 +29,7 @@ class RAG:
         for i, result in enumerate(results, start=1):
             print(f"\nChunk {i}")
             print(f"File : {result['file']}")
+            print(f"Page : {result['page']}")
             print(f"Embedding Score : {result['score']:.4f}")
             print(f"Re-rank Score   : {result['rerank_score']:.1f}")
             print("----------------------")

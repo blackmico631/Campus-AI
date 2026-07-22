@@ -1,23 +1,34 @@
-from documents.pdf_reader import read_pdf
-from documents.chunker import split_text
-from documents.retriever import search_chunks
+from documents.retriever import search_indexes
 
 
-text = read_pdf("data/documents/アセンブリ言語実機演習レポート.pdf")
+# 検索対象のインデックス
+index_paths = [
+    "data/indexes/assembly/assembly00.json",
+    "data/indexes/assembly/assembly06.json",
+    "data/indexes/assembly/assembly-actualmachine-report.json"
+]
 
-chunks = split_text(text)
 
-question = "LEDの点灯に関する考察について説明してください"
+# テスト用の質問
+question = "アセンブリ言語の存在意義は？"
 
-results = search_chunks(
+
+# 検索
+results = search_indexes(
     question=question,
-    chunks=chunks,
+    index_paths=index_paths,
     top_k=3
 )
 
-print(f"質問: {question}")
 
-for i, (chunk, score) in enumerate(results):
-    print(f"\n===== 検索結果 {i + 1} =====")
-    print(f"類似度: {score:.4f}")
-    print(chunk[:500])
+# 結果表示
+print("\n===== 検索結果 =====\n")
+
+for i, result in enumerate(results, start=1):
+    print(f"===== Chunk {i} =====")
+    print(f"File : {result['file']}")
+    print(f"Page : {result['page']}")
+    print(f"Score: {result['score']:.4f}")
+    print("--------------------")
+    print(result["chunk"][:300])
+    print()

@@ -88,3 +88,24 @@ def split_text(
         )
 
     return chunks
+
+def split_pages(
+    pages: list[dict],
+    chunk_size: int = 800,
+    overlap_units: int = 2
+) -> list[dict]:
+
+    results = []
+
+    for page in pages:
+        chunks = split_text(page["text"])
+
+        for chunk in chunks:
+            results.append(
+                {
+                    "page": page["page"],
+                    "chunk": chunk
+                }
+            )
+
+    return results

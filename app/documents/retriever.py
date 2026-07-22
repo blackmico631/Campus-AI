@@ -74,7 +74,8 @@ def search_index(
             {
                 "chunk": item["chunk"],
                 "score": similarity,
-                "file": filename
+                "file": item["file"],
+                "page": item["page"]
             }
         )
 

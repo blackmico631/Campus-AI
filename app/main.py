@@ -188,13 +188,20 @@ while True:
 
         print(f"\nCampusAI > {answer}\n")
 
-        print("参考資料")
-        print("-" * 30)
+        print("\n参考資料")
+        print("------------------------------")
 
-        for i, result in enumerate(results, start=1):
-            print(
-                f"{i}. {result['file']} "
-                f"(Re-rank: {result['rerank_score']:.1f})"
-            )
+        seen_sources = set()
+        sources = []
+
+        for result in retrieval["results"]:
+            source = (result["file"], result["page"])
+
+            if source not in seen_sources:
+                seen_sources.add(source)
+                sources.append(source)
+
+        for i, (file, page) in enumerate(sources, start=1):
+            print(f"{i}. {file} (p.{page})")
 
         print()

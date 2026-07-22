@@ -1,20 +1,13 @@
-from documents.pdf_reader import read_pdf
-from ai.client import CampusAI
+from documents.pdf_reader import read_pdf_pages
+from documents.chunker    import split_pages
 
-# PDFを読み込む
-text = read_pdf("data/documents/アセンブリ言語実機演習レポート.pdf")
+pages = read_pdf_pages(
+    "data/documents/assembly/assembly06.pdf"
+)
 
-# CampusAIを起動
-ai = CampusAI()
+print(pages[0])
 
-# PDFの内容を含めて質問する
-question = """
-以下は大学の講義資料です。
-資料の内容に基づいて、重要なポイントを3つ説明してください。
 
-【講義資料】
-""" + text
+chunks = split_pages(pages)
 
-answer = ai.ask(question)
-
-print(answer)
+print(chunks[0])

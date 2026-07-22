@@ -13,3 +13,21 @@ def read_pdf(file_path: str) -> str:
             text += page_text + "\n"
 
     return text
+
+
+def read_pdf_pages(file_path: str) -> list[dict]:
+    reader = PdfReader(file_path)
+
+    pages = []
+
+    for i, page in enumerate(reader.pages):
+        text = page.extract_text()
+        if text:
+            pages.append(
+                {
+                    "page": i + 1,
+                    "text": text
+                }
+            )
+
+    return pages
